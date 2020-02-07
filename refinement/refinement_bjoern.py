@@ -120,7 +120,7 @@ Resolution = 30
 dataLoadingTime = 5001
 loadingCustomEnding = "_3_spheres_pressurized_small_distance"
 
-globalSavingString = "_1_sphere_refinement_no_alpha"
+globalSavingString = "_1_sphere_refinement_no_refinement"
 #sometimes needed on the server, can be safely removed most of the time. Probably a fenics bug:
 tempMesh = Mesh()
 
@@ -274,16 +274,20 @@ for n in range(num_steps):
 
 			# 	custom marking loop, for testing
 				for cells222 in cells(myMesh.boundaryMesh):
+					#BASE
 					if myMesh.currentSolutionFunction(cells222.midpoint()) >= 0.92 * myMesh.maximumCurrentSolutionFunctionValue:
 			# 		#if cells222.volume() > myMesh.cell_volumes_history[-1][cells222.index()] * refinementThreshold and myMesh.cell_markers_boundary[cells222] == True:
 						#myMesh.isThereRefinementNecessary = True
 			# 		#else:
 						myMesh.cell_markers_boundary[cells222] = True
 						myMesh.Estar[cells222.index()] = 0.8/(1.0-poisson_ratio1**2)
-			
+					# TIP
+					if myMesh.currentSolutionFunction(cells222.midpoint()) >= 0.97 * myMesh.maximumCurrentSolutionFunctionValue:
+						myMesh.cell_markers_boundary[cells222] = True
+						myMesh.Estar[cells222.index()] = 2.5/(1.0-poisson_ratio1**2)
 			# refine at this point, for testing
-			if n == 1000:
-				myMesh.isThereRefinementNecessary = True
+			#if n == 1000:
+			#	myMesh.isThereRefinementNecessary = True
 
 
 
@@ -438,3 +442,12 @@ for n in range(num_steps):
 				(myMesh.k_on_cells, myMesh.c_on_cells_angles_opposing_edges, myMesh.cells_edge_vectors) = k_and_c_on_cells(myMesh)
 				
 				TRBS_adjust_initial_edges_with_elastic_energy(myMesh, TEST_energy_on_cells_before_refinement)
+
+
+
+
+
+# safe sim data every 2000 steps
+	for i in range(len(usedMeshesList)):
+		if n % 2000 == 0:
+			saveData(usedMeshesList[i], num_steps+1, res=Resolution, customEnding = globalSavingString + "")
