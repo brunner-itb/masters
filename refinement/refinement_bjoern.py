@@ -16,7 +16,7 @@ import time
 calculateOnServer = False
 #make driver and classes files available in this file
 try:
-	exec(open('/media/pb/UBUNTU/Masterarbeit/driver_classes.py').read())
+	exec(open('/media/pb/UBUNTU/masters/driver_classes.py').read())
 except IOError:
 	try:
 		exec(open("/home/brunner/Masters/driver_classes.py").read())
@@ -24,7 +24,7 @@ except IOError:
 	except IOError:
 		exec(open("/home/lea/Schreibtisch/Patrick/driver_classes.py").read())
 try:
-	exec(open("/media/pb/UBUNTU/Masterarbeit/classes.py").read())
+	exec(open("/media/pb/UBUNTU/masters/classes.py").read())
 except IOError:
 	try:
 		exec(open("/home/brunner/Masters/classes.py").read())

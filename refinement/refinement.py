@@ -16,7 +16,7 @@ import time
 calculateOnServer = False
 #make driver and classes files available in this file
 try:
-	exec(open('/media/pb/UBUNTU/Masterarbeit/driver_classes.py').read())
+	exec(open('/media/pb/UBUNTU/masters/driver_classes.py').read())
 except IOError:
 	try:
 		exec(open("/home/brunner/Masters/driver_classes.py").read())
@@ -24,7 +24,7 @@ except IOError:
 	except IOError:
 		exec(open("/home/lea/Schreibtisch/Patrick/driver_classes.py").read())
 try:
-	exec(open("/media/pb/UBUNTU/Masterarbeit/classes.py").read())
+	exec(open("/media/pb/UBUNTU/masters/classes.py").read())
 except IOError:
 	try:
 		exec(open("/home/brunner/Masters/classes.py").read())
@@ -325,7 +325,7 @@ for n in range(num_steps):
 			#if n % (15000) == 0:
 			if n > 10:
 				# compare the current growth slope/gradient against the biggest one, if the growth slows down to x percent, refine
-				if n == 20:
+				if n == 18:
 					maximumCurrentSolutionFunctionValue = 0
 					try:
 						minimumCurrentSolutionFunctionValue = myMesh.currentSolutionFunction(Cell(myMesh.boundaryMesh, 0).midpoint())
@@ -384,7 +384,7 @@ for n in range(num_steps):
 							myMesh.cell_markers_boundary[cells222] = True
 							myMesh.Estar[cells222.index()] = 0.8/(1.0-poisson_ratio1**2)
 		
-			if n == 10000:
+			if n == 18:
 				myMesh.isThereRefinementNecessary = True
 
 
