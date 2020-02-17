@@ -2226,6 +2226,22 @@ def TRBS_adjust_initial_edges_with_elastic_energy(meshClass, elastic_energy_on_c
 		dict_with_parent_cells_daughters[parent_cells[i]].append(parent)
 	#print(dict_with_parent_cells_daughters)
 
+
+
+	'''
+
+
+
+	Determine here how many daughters a parent had. Based on the no. of daughters, determine the refinement type and adjust the
+	initial_edge_lengths accordingly
+
+
+
+	'''
+
+
+
+
 	for edgeIndex in range(meshClass.boundaryMesh.num_edges()):
 		# define the vertices according to Delingette and my own TRBS_force_on_mesh_parallel function
 		v2 = Edge(meshClass.boundaryMesh, edgeIndex).entities(0)[0]
@@ -2237,21 +2253,22 @@ def TRBS_adjust_initial_edges_with_elastic_energy(meshClass, elastic_energy_on_c
 				
 				l1 = Edge(meshClass.boundaryMesh, edgeIndex).length()
 
-				# 0.25 is a simplification. Most of the refined triangles were turned into 4 new triangles, therefore the
-				# 1/4 factor. This works well, but is of course a simplification.
+				# factor_1 is a simplification. If a parent cell was turned into 3 daughters, assume an equal distribution of
+				# energy between them, meaning 1/factor_1 for the elastic energy.
+				# This works well, but is of course a simplification.
 				if elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] > 0:
 					factor_1 = len(dict_with_parent_cells_daughters[parent_cells[cellIndex]])
 					if factor_1 == 0:
 						factor_1 = 1
 					new_L1 = np.sqrt( \
 							l1**2
-							- factor_1*np.sqrt(1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
+							- 1/factor_1*np.sqrt(1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
 							* 4/meshClass.k_on_cells[cellIndex][edgeIndex]) \
 							)
 				else:
 					new_L1 = np.sqrt( \
 							l1**2
-							+ factor_1*np.sqrt(-1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
+							+ 1/factor_1*np.sqrt(-1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
 							* 4/meshClass.k_on_cells[cellIndex][edgeIndex]) \
 							)
 				# set the new initial length new_L1
