@@ -2213,7 +2213,18 @@ def TRBS_adjust_initial_edges_with_elastic_energy(meshClass, elastic_energy_on_c
 	
 	meshClass.edges_to_cells_map = edges_to_cells_map(meshClass)
 	# get the parent cells data array
+	# index is the current(refined) cell index, value is the parent cell of that index
 	parent_cells = meshClass.boundaryMesh.data().array("parent_cell", meshClass.boundaryMesh.topology().dim())
+	#print(parent_cells)
+
+	dict_with_parent_cells_daughters = {}
+
+	for parent in parent_cells:
+		dict_with_parent_cells_daughters[parent] = []
+
+	for i,parent in enumerate(parent_cells):
+		dict_with_parent_cells_daughters[parent_cells[i]].append(parent)
+	#print(dict_with_parent_cells_daughters)
 
 	for edgeIndex in range(meshClass.boundaryMesh.num_edges()):
 		# define the vertices according to Delingette and my own TRBS_force_on_mesh_parallel function
@@ -2229,15 +2240,18 @@ def TRBS_adjust_initial_edges_with_elastic_energy(meshClass, elastic_energy_on_c
 				# 0.25 is a simplification. Most of the refined triangles were turned into 4 new triangles, therefore the
 				# 1/4 factor. This works well, but is of course a simplification.
 				if elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] > 0:
+					factor_1 = len(dict_with_parent_cells_daughters[parent_cells[cellIndex]])
+					if factor_1 == 0:
+						factor_1 = 1
 					new_L1 = np.sqrt( \
 							l1**2
-							- 0.25*np.sqrt(1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
+							- factor_1*np.sqrt(1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
 							* 4/meshClass.k_on_cells[cellIndex][edgeIndex]) \
 							)
 				else:
 					new_L1 = np.sqrt( \
 							l1**2
-							+ 0.25*np.sqrt(-1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
+							+ factor_1*np.sqrt(-1/3 * elastic_energy_on_cells_before_refinement[parent_cells[cellIndex]] \
 							* 4/meshClass.k_on_cells[cellIndex][edgeIndex]) \
 							)
 				# set the new initial length new_L1
